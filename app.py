@@ -35,7 +35,7 @@ if 'initialized' not in st.session_state:
         st.markdown("""
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; background-color: white;">
                 <div class="splash-logo">🍊</div>
-                <h1 style="color: #2e7d32; margin-top: 20px;">Pomelo Smart App</h1>
+                <h1 style="color: #2e7d32; margin-top: 20px;">Smart App</h1>
                 <p style="color: #666;">กำลังโหลด AI และกล้อง...</p>
             </div>
         """, unsafe_allow_html=True)
@@ -73,3 +73,4 @@ webrtc_streamer(
 )
 
 st.markdown("<p style='text-align: center; color: #aaa; font-size: 10px; margin-top: 50px;'>พัฒนาโดย: ทีมคุณจิรัชญาณ์</p>", unsafe_allow_html=True)
+
