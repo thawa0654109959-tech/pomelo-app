@@ -4,33 +4,21 @@ import av
 from ultralytics import YOLO
 import time
 
-# --- 1. ตั้งค่า Icon และ Metadata ให้ Android จำว่าเป็นแอป ---
+# --- 1. ตั้งค่า Icon และ UI ---
 st.set_page_config(page_title="Pomelo Scan", page_icon="🍊", layout="centered")
 
-# บังคับ Icon ส้มโอ และซ่อนแถบเมนู Streamlit
+# ซ่อนส่วนเกินของ Streamlit และตั้งค่า CSS
 st.markdown("""
-    <head>
-        <link rel="icon" href="https://img.icons8.com/emoji/96/orange-emoji.png">
-        <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/96/orange-emoji.png">
-        <meta name="mobile-web-app-capable" content="yes">
-    </head>
     <style>
-    /* ซ่อนแถบด้านบนและเมนูทั้งหมด */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* ปรับแต่งฟอนต์ */
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;500&display=swap');
     html, body, [class*="css"] { font-family: 'Kanit', sans-serif; }
     
-    /* ล็อคขนาดหน้าจอให้พอดีมือถือ */
-    .main .block-container {
-        max-width: 450px;
-        padding-top: 1rem;
-    }
+    .main .block-container { max-width: 450px; padding-top: 1rem; }
     
-    /* แอนิเมชันโลโก้เด้ง */
     @keyframes pulse {
         0% { transform: scale(1); }
         50% { transform: scale(1.1); }
@@ -47,8 +35,8 @@ if 'initialized' not in st.session_state:
         st.markdown("""
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; background-color: white;">
                 <div class="splash-logo">🍊</div>
-                <h1 style="color: #2e7d32; margin-top: 20px; font-weight: 500;">Pomelo Smart App</h1>
-                <p style="color: #666;">กำลังเชื่อมต่อระบบ AI...</p>
+                <h1 style="color: #2e7d32; margin-top: 20px;">Pomelo Smart App</h1>
+                <p style="color: #666;">กำลังโหลด AI และกล้อง...</p>
             </div>
         """, unsafe_allow_html=True)
         time.sleep(3)
@@ -60,30 +48,28 @@ if 'initialized' not in st.session_state:
 def load_model():
     return YOLO("best.pt")
 
-model = load_model()
+try:
+    model = load_model()
+except Exception:
+    st.error("⚠️ ไฟล์โมเดลมีปัญหา กรุณาอัปโหลด best.pt ใหม่บน GitHub")
 
-# --- 4. ระบบประมวลผลวิดีโอ (กล้องหลัง) ---
+# --- 4. ระบบประมวลผลวิดีโอ (Real-time) ---
 def video_frame_callback(frame):
     img = frame.to_ndarray(format="bgr24")
     results = model.predict(img, conf=0.5, verbose=False)
     annotated_frame = results[0].plot()
     return av.VideoFrame.from_ndarray(annotated_frame, format="bgr24")
 
-# --- 5. หน้าจอหลักของแอป ---
+# --- 5. หน้าจอหลักแอป ---
 st.markdown("<h2 style='text-align: center; color: #2e7d32; margin-bottom: 0;'>🍊 Pomelo Detector</h2>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #666; font-size: 14px;'>Real-time Analysis</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #666; font-size: 14px;'>Real-time AI Analysis</p>", unsafe_allow_html=True)
 
-# กล้อง
 webrtc_streamer(
-    key="pomelo-android-final",
+    key="pomelo-scan-final",
     video_frame_callback=video_frame_callback,
     rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-    media_stream_constraints={
-        "video": {"facingMode": "environment"}, # บังคับเปิดกล้องหลัง
-        "audio": False
-    },
+    media_stream_constraints={"video": {"facingMode": "environment"}, "audio": False},
     async_processing=True,
 )
 
-st.divider()
-st.markdown("<p style='text-align: center; color: #aaa; font-size: 10px;'>พัฒนาโดย: ทีมคุณจิรัชญาณ์</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #aaa; font-size: 10px; margin-top: 50px;'>พัฒนาโดย: ทีมคุณจิรัชญาณ์</p>", unsafe_allow_html=True)
