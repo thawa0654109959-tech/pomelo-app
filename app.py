@@ -91,4 +91,5 @@ with st.container():
         async_processing=True,
     )
 
-st.markdown("<p style='text-align: center; color: #aaa; font-size: 10px; margin-top: 50px;'>Version 1.0.4 | Secured by AI Cloud</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #aaa; font-size: 10px; margin-top: 50px;'>Version 1.0 | Secured by AI Cloud</p>", unsafe_allow_html=True)
+
