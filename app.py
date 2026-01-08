@@ -1,51 +1,43 @@
 import streamlit as st
 from ultralytics import YOLO
+import cv2
 from PIL import Image
 import numpy as np
 
-# ตั้งค่าหน้าแอป
-st.set_page_config(page_title="Pomelo Scanner", layout="centered")
-st.title("🍊 ระบบตรวจความสุกส้มโออัจฉริยะ")
-st.write("ถ่ายรูปส้มโอเพื่อวิเคราะห์สายพันธุ์และความสุก")
+st.set_page_config(page_title="Pomelo Real-time", layout="centered")
+st.title("🍊 Pomelo Real-time Detection")
 
-# 1. โหลดโมเดล (ต้องวางไฟล์ best.pt ไว้ใน GitHub ที่เดียวกับโค้ดนี้)
+# 1. โหลดโมเดล
 @st.cache_resource
 def load_model():
     return YOLO("best.pt")
 
-try:
-    model = load_model()
-except Exception as e:
-    st.error("ไม่พบไฟล์โมเดล best.pt กรุณาตรวจสอบการอัปโหลดไฟล์")
+model = load_model()
 
-# 2. ส่วนรับภาพ (เปิดกล้องมือถือได้เลย)
-img_file = st.camera_input("สแกนส้มโอ")
+# 2. ใช้ฟีเจอร์กล้องของ Streamlit
+img_file = st.camera_input("สแกนส้มโอแบบสด")
 
 if img_file:
-    # แปลงไฟล์ภาพ
+    # อ่านภาพ
     img = Image.open(img_file)
+    img_array = np.array(img)
     
-    # 3. ให้ AI พยากรณ์
-    results = model.predict(img, conf=0.25)
+    # 3. Predict
+    results = model.predict(img_array, conf=0.25)
     
-    # 4. แสดงผล
+    # 4. แสดงผลทันที
     for r in results:
-        # วาดกรอบลงบนภาพ
         res_plotted = r.plot()
-        st.image(res_plotted, caption="ผลการวิเคราะห์จาก AI", use_container_width=True)
+        st.image(res_plotted, caption="วิเคราะห์ภาพล่าสุด", use_container_width=True)
         
-        # สรุปจำนวนที่พบ
-        num_boxes = len(r.boxes)
-        if num_boxes > 0:
-            st.success(f"✅ ตรวจพบส้มโอทั้งหมด {num_boxes} รายการ")
-            
-            # แสดงรายชื่อคลาสที่ตรวจเจอ
-            detected_classes = [model.names[int(c)] for c in r.boxes.cls]
-            for name in set(detected_classes):
-                count = detected_classes.count(name)
-                st.write(f"- {name}: {count} ลูก")
-        else:
-            st.warning("❌ ไม่พบส้มโอในภาพ กรุณาลองใหม่อีกครั้ง")
+        # แสดงจำนวนที่นับได้
+        count = len(r.boxes)
+        st.subheader(f"📊 จำนวนที่ตรวจพบ: {count} ลูก")
+        
+        # แยกคลาส
+        detected_classes = [model.names[int(c)] for c in r.boxes.cls]
+        for name in set(detected_classes):
+            st.write(f"- {name}: {detected_classes.count(name)}")
 
-st.divider()
-st.info("จัดทำโดย: คุณจิรัชญาณ์ และคณะ")
+# เพิ่มคำแนะนำการใช้
+st.info("💡 ทริค: กดปุ่มถ่ายภาพรัวๆ เพื่อให้ระบบอัปเดตตำแหน่งส้มโอแบบต่อเนื่องครับ")
