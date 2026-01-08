@@ -1,7 +1,7 @@
 ultralytics
 streamlit
 streamlit-webrtc
-PyAV
 Pillow
 numpy
 opencv-python-headless
+av
