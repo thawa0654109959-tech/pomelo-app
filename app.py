@@ -8,6 +8,11 @@ import time
 st.set_page_config(page_title="Pomelo AI Scanner", page_icon="🍊", layout="centered")
 
 st.markdown("""
+    <link rel="apple-touch-icon" href="https://em-content.zobj.net/source/microsoft-teams/363/apple_1f34e.png">
+    <link rel="icon" type="image/png" href="https://em-content.zobj.net/source/microsoft-teams/363/apple_1f34e.png">
+""", unsafe_allow_html=True)
+
+st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;500&display=swap');
     html, body, [class*="css"] { font-family: 'Kanit', sans-serif; }
@@ -67,3 +72,4 @@ webrtc_streamer(
 
 st.divider()
 st.info("💡 คำแนะนำ: หากจอดำ ให้ลองรีเฟรชหน้าเว็บหรือสลับจาก WiFi มาใช้เน็ตมือถือครับ")
+
